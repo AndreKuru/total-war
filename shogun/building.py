@@ -1,5 +1,22 @@
 from dataclasses import dataclass
 
+def get_building(buildings: list["Building"], id: str):
+    for building in buildings:
+        if building.id == id:
+            return building
+
+def get_buildings(buildings: list["Building"], ids: list[str]):
+    selected_buildings = list()
+
+    for building in buildings:
+        for id in ids:
+            if building.id == id:
+                selected_buildings.append(building)
+                ids.remove(id)
+                pass
+
+    return selected_buildings
+
 
 @dataclass
 class Building:

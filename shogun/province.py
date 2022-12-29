@@ -9,6 +9,24 @@ class Minerium(Enum):
     SILVER = 2
     GOLD = 3
 
+def get_province(provinces: list["Province"], id: str):
+    for province in provinces:
+        if province.id == id:
+            return province
+
+def get_provinces(provinces: list["Province"], ids: list[str]):
+    selected_provinces = list()
+
+    for province in provinces:
+        for id in ids:
+            if province.id == id:
+                selected_provinces.append(province)
+                ids.remove(id)
+                pass
+
+    return selected_provinces
+
+
 @dataclass
 class Province:
     id: str

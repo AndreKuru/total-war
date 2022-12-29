@@ -18,6 +18,24 @@ class Weapon(Enum):
     SWORD_AND_NINJA_STARS = 5
     JAVELIN_SWORD_AND_SHIELD = 6
 
+def get_unit(units: list["Unit"], id: str):
+    for unit in units:
+        if unit.id == id:
+            return unit
+
+def get_units(units: list["Unit"], ids: list[str]):
+    selected_units = list()
+
+    for unit in units:
+        for id in ids:
+            if unit.id == id:
+                selected_units.append(unit)
+                ids.remove(id)
+                pass
+
+    return selected_units
+
+
 @dataclass
 class Unit:
     id: str
