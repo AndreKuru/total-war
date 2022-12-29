@@ -21,9 +21,10 @@ class Weapon(Enum):
 @dataclass
 class Unit:
     id: str
+    name: str
     category: "Category"
     class_unit: "Class"
-    weapon_type: "Weapon"
+    weapon: "Weapon"
     soldiers: int
     cost: int
     seasons_to_train: int

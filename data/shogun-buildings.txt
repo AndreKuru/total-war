@@ -1,0 +1,2 @@
+sd;Spear Dojo;100;None;ya,ys;None;4
+ad;Archer Dojo;200;None;as;None;4
