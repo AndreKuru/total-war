@@ -56,3 +56,17 @@ class Province:
                 self.insert_upgradeds(building)
                 self.buildings.append(building)
 
+    def remove_upgradeds(self, building_to_remove: "Building"):
+        for building in self.buildings:
+            if building.upgrades == building_to_remove.id:
+                self.remove_upgradeds(building)
+                self.buildings.remove(building)
+                pass
+
+    def remove(self, buildings: list["Building"]):
+        for building in buildings:
+            if building not in self.buildings:
+                raise Exception(building.name + " not exists")
+            else:
+                self.remove_upgradeds(building)
+                self.buildings.remove(building)

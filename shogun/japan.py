@@ -36,9 +36,12 @@ class Japan:
                     buildings = get_buildings(command[1:])
                     current_province.insert(buildings)
 
-                    '''               
                 case "remove" | "r":
+                    buildings = get_buildings(command[1:])
+                    current_province.remove(buildings)
+                    
 
+                    '''               
                 case "list" | "list_provinces" | "l":
 
                 case "purchase" | "p":
