@@ -1,5 +1,5 @@
 from japan import Japan
-from province import Province
+from province import Province, Minerium
 from building import Building
 from unit import Unit, Category, Class, Weapon
 
@@ -7,6 +7,7 @@ def read_units(file_path):
     file = open(file_path, "r")
     file_lines = file.readlines()
     file_lines = [line.rstrip("\n") for line in file_lines]
+
     units = list()
     for line in file_lines:
         data = line.split(";")
@@ -42,3 +43,99 @@ def read_units(file_path):
         units.append(unit)
 
     return units
+
+def read_buildings(file_path):
+    file = open(file_path, "r")
+    file_lines = file.readlines()
+    file_lines = [line.rstrip("\n") for line in file_lines]
+
+    buildings = list()
+    for line in file_lines:
+        data = line.split(";")
+        if len(data) == 7:
+            id = data[0]
+            name = data[1]
+            cost = int(data[2])
+            requires = data[3]
+            produces = data[4]
+            upgrades = data[5]
+            seasons_to_build = int(data[6])
+            building = Building(id, name, cost, requires, produces, upgrades, seasons_to_build)
+            buildings.append(building)
+        else:
+            raise Exception("Building input has incorrect format.")
+        
+    return buildings
+
+def read_provinces(file_path, initial: bool = False):
+    file = open(file_path, "r")
+    file_lines = file.readlines()
+    file_lines = [line.rstrip("\n") for line in file_lines]
+
+    provinces = list()
+    for line in file_lines:
+        data = line.split(";")
+        if len(data) > 2:
+            id = data[0]
+            name = data[1]
+            farm_income = int(data[2])
+
+            if len(data) > 3:
+                water = bool(data[3])
+
+                if len(data) > 4:
+                    minerium = Minerium(int(data[4]))
+
+                    if len(data) > 5:
+                        bonus = data[5]
+                        match bonus[0]:
+                            case 'c':
+                                bonus = Class(int(bonus[1:]))
+                            case 'w':
+                                bonus = Weapon(int(bonus[1:]))
+                            case 'i':
+                                bonus = bonus[1:]
+                            case _:
+                                raise Exception("Invalid building bonus.")
+                        
+                        if len(data) > 6:
+                            if not initial:
+                                raise Exception("Too many data to initial province.")
+
+                            owned = bool(data[6])
+
+                            if len(data) > 7:
+                                buildings = data[7].split(",")
+                                
+                                if len(data) > 8:
+                                    units_trainable = data[8].split(",")
+
+                                    if len(data) > 9:
+                                        raise Exception("Too many data to province.")
+                                    
+                                    province = Province(id, name, farm_income, water, minerium, bonus, owned, buildings, units_trainable)
+
+                                else:
+                                    province = Province(id, name, farm_income, water, minerium, bonus, owned, buildings)
+
+                            else:
+                                province = Province(id, name, farm_income, water, minerium, bonus, owned)
+
+                        else:
+                            province = Province(id, name, farm_income, water, minerium, bonus)
+
+                    else:
+                        province = Province(id, name, farm_income, water, minerium)
+
+                else:
+                    province = Province(id, name, farm_income, water)
+
+            else:
+                province = Province(id, name, farm_income)
+        
+        else:
+            raise Exception("Insuficient data to province.")
+
+        provinces.append(province)
+    
+    return provinces
