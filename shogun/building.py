@@ -1,10 +1,5 @@
 from dataclasses import dataclass
 
-def get_building(buildings: list["Building"], id: str):
-    for building in buildings:
-        if building.id == id:
-            return building
-
 def get_buildings(buildings: list["Building"], ids: list[str]):
     selected_buildings = list()
 

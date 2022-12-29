@@ -40,3 +40,19 @@ class Province:
 
     buildings: list["Building"] = field(default_factory=list)
     units_trainable: list["Unit"] = field(default_factory=list)
+
+    def insert_upgradeds(self, building: "Building"):
+        if building.upgrades:
+            self.insert_upgradeds(building.upgrades)
+        else:
+            if building not in self.buildings:
+                self.buildings.append(building)
+
+    def insert(self, buildings: list["Building"]):
+        for building in buildings:
+            if building in self.buildings:
+                raise Exception(building.name + " already exists")
+            else:
+                self.insert_upgradeds(building)
+                self.buildings.append(building)
+

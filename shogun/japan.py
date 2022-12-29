@@ -1,8 +1,8 @@
 from dataclasses import dataclass, field
 from enum import Enum
 from province import Province, get_province, get_provinces
-from building import Building, get_building, get_buildings
-from unit import Unit, get_unit, get_units
+from building import Building, get_buildings
+from unit import Unit, get_units
 
 class Season(Enum):
     SPRING = 0 # new year
@@ -32,10 +32,11 @@ class Japan:
                 case "select" | "s":
                     current_province = get_province(self.provinces, command[1])
 
-                    '''               
                 case "insert" | "i":
-                    current_province.insert_building(command[1])
+                    buildings = get_buildings(command[1:])
+                    current_province.insert(buildings)
 
+                    '''               
                 case "remove" | "r":
 
                 case "list" | "list_provinces" | "l":
