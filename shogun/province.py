@@ -13,16 +13,25 @@ def get_province(provinces: list["Province"], id: str):
     for province in provinces:
         if province.id == id:
             return province
+    
+    raise Exception("Invalid province.")
 
 def get_provinces(provinces: list["Province"], ids: list[str]):
     selected_provinces = list()
+    breaked = False
 
-    for province in provinces:
-        for id in ids:
+    for id in ids:
+        for province in provinces:
             if province.id == id:
-                selected_provinces.append(province)
-                ids.remove(id)
-                pass
+                if province in selected_provinces:
+                    print(province.name  + "duplicate ignored.")
+                else:
+                    selected_provinces.append(province)
+                breaked = True
+                break
+        if not breaked:
+            raise Exception("Province " + id + " not found.")
+        breaked = False
 
     return selected_provinces
 
@@ -61,7 +70,7 @@ class Province:
             if building.upgrades == building_to_remove.id:
                 self.remove_upgradeds(building)
                 self.buildings.remove(building)
-                pass
+                break
 
     def remove(self, buildings: list["Building"]):
         for building in buildings:

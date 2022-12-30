@@ -20,13 +20,20 @@ class Weapon(Enum):
 
 def get_units(units: list["Unit"], ids: list[str]):
     selected_units = list()
+    breaked = False
 
-    for unit in units:
-        for id in ids:
+    for id in ids:
+        for unit in units:
             if unit.id == id:
-                selected_units.append(unit)
-                ids.remove(id)
-                pass
+                if unit in selected_units:
+                    print(unit.name  + "duplicate ignored.")
+                else:
+                    selected_units.append(unit)
+                breaked = True
+                break
+        if not breaked:
+            raise Exception("Unit " + id + " not found.")
+        breaked = False
 
     return selected_units
 

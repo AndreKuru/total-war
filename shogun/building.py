@@ -2,13 +2,20 @@ from dataclasses import dataclass
 
 def get_buildings(buildings: list["Building"], ids: list[str]):
     selected_buildings = list()
+    breaked = False
 
-    for building in buildings:
-        for id in ids:
+    for id in ids:
+        for building in buildings:
             if building.id == id:
-                selected_buildings.append(building)
-                ids.remove(id)
-                pass
+                if building in selected_buildings:
+                    print(building.name  + "duplicate ignored.")
+                else:
+                    selected_buildings.append(building)
+                breaked = True
+                break
+        if not breaked:
+            raise Exception("Building " + id + " not found.")
+        breaked = False
 
     return selected_buildings
 
