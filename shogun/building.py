@@ -1,4 +1,19 @@
 from dataclasses import dataclass
+from enum import Enum
+from unit import Unit
+
+class Condition(Enum):
+    NOTHING = 0
+    WATER = 1
+    IRON_SAND_DEPOSITS = 2
+    NATURAL_MINERAL_DEPOSITS = 3
+    LEGENDARY_SWORDMAN_EVENT = 4
+    CHRISTIANITY = 5
+    SIX_CHURCHES = 6
+    DUTCH_ACCEPTANCE = 7
+    BUDDHISM = 8
+
+
 
 def get_buildings(buildings: list["Building"], ids: list[str]):
     selected_buildings = list()
@@ -25,7 +40,7 @@ class Building:
     id: str
     name: str
     cost: int
-    requires: str
-    produces: str
-    upgrades: str
+    requires: list["Building" | "Condition"]            # TODO: redo the read_building
+    produces: tuple["Unit", "Building" | "Condition"]   # TODO: redo the read_building
+    upgrades: "Building"                                # TODO: redo the read_building
     seasons_to_build: int

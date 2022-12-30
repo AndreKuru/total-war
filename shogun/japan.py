@@ -1,14 +1,33 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from province import Province, get_province, get_provinces
-from building import Building, get_buildings
-from unit import Unit, get_units
+from province import Province, get_province
+from building import Building
+from unit import Unit, Agent
 
 class Season(Enum):
     SPRING = 0 # new year
     SUMMER = 1 # new game
     AUTUMN = 2 # profit arrives on this turn end
     WINTER = 3 # brace yourselves
+
+def get_instances(collection: list["Unit" | "Agent" | "Building" | "Province"], ids: list[str]):
+    selected_instances = list()
+    breaked = False
+
+    for id in ids:
+        for instance in collection:
+            if instance.id == id:
+                if instance in selected_instances:
+                    print(instance.name  + "duplicate ignored.")
+                else:
+                    selected_instances.append(instance)
+                breaked = True
+                break
+        if not breaked:
+            raise Exception(id + " not found.")
+        breaked = False
+
+    return selected_instances
 
 @dataclass
 class Japan:
@@ -32,6 +51,21 @@ class Japan:
             for _ in 4 - len(province.id):
                 spaces += " "
             print(province.id + spaces + "- " + province.name)
+    
+    def list_all_buildings(self):
+        for building in self.buildings:
+            spaces = ""
+            for _ in 4 - len(building.id):
+                spaces += " "
+            print(building.id + spaces + "- " + building.name + " $" + building.cost + " #" + building.seasons_to_build + " | requires: " + building.requires)
+    
+    def list_all_units(self):
+        for unit in self.units:
+            spaces = ""
+            for _ in 4 - len(unit.id):
+                spaces += " "
+            print(unit.id + spaces + "- " + unit.name + " $" + unit.cost + " #" + unit.seasons_to_train)
+        
         
     def run(self):
         current_province = None 
@@ -58,10 +92,10 @@ class Japan:
                         print("No building informed.")
                     else:
                         try:
-                            buildings = get_buildings(self.buildings, command[1:])
+                            buildings = get_instances(self.buildings, command[1:])
                             current_province.insert(buildings)
                         except Exception as e:
-                            print(e)
+                            print("Building" + e)
 
                 case "remove" | "r":
                     if current_province == None:
@@ -70,10 +104,10 @@ class Japan:
                         print("No building informed.")
                     else:
                         try:
-                            buildings = get_buildings(command[1:])
+                            buildings = get_instances(command[1:])
                             current_province.remove(buildings)
                         except Exception as e:
-                            print(e)
+                            print("Building" + e)
 
                 case "list" | "list_provinces" | "l":
                     self.list_my_provinces()
@@ -82,7 +116,7 @@ class Japan:
                     pass
 
                 case "all_buildings" | "ab":
-                    pass
+                    self.list_all_buildings()
 
                 case "buildings" | "b":
                     pass
@@ -94,7 +128,7 @@ class Japan:
                     pass
 
                 case "all_units" | "au":
-                    pass
+                    self.list_all_units()
 
                 case "units" | "u":
                     pass
