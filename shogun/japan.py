@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from province import Province, get_province
-from building import Building
+from province import Province, get_province, list_my_provinces
+from building import Building, list_buildings
 from unit import Unit, Agent
 
 class Season(Enum):
@@ -10,7 +10,7 @@ class Season(Enum):
     AUTUMN = 2 # profit arrives on this turn end
     WINTER = 3 # brace yourselves
 
-def get_instances(collection: list["Unit" | "Agent" | "Building" | "Province"], ids: list[str]):
+def get_instances(collection: list["Unit"] | list["Agent"] | list["Building"] | list["Province"], ids: list[str]):
     selected_instances = list()
     breaked = False
 
@@ -39,33 +39,11 @@ class Japan:
     current_year: int = 1530
     current_money: int = 1000
     debts_by_season: list[int] = field(default_factory=list)
+    legendary_swordman_event: bool = False
+    christianity: bool = False
+    churches: int = 0
+    dutch_acceptance: bool = False
 
-    def list_my_provinces(self):
-        my_provinces = list()
-        for province in self.provinces:
-            if province.owned:
-                my_provinces.append(province)
-        
-        for province in my_provinces:
-            spaces = ""
-            for _ in 4 - len(province.id):
-                spaces += " "
-            print(province.id + spaces + "- " + province.name)
-    
-    def list_all_buildings(self):
-        for building in self.buildings:
-            spaces = ""
-            for _ in 4 - len(building.id):
-                spaces += " "
-            print(building.id + spaces + "- " + building.name + " $" + building.cost + " #" + building.seasons_to_build + " | requires: " + building.requires)
-    
-    def list_all_units(self):
-        for unit in self.units:
-            spaces = ""
-            for _ in 4 - len(unit.id):
-                spaces += " "
-            print(unit.id + spaces + "- " + unit.name + " $" + unit.cost + " #" + unit.seasons_to_train)
-        
         
     def run(self):
         current_province = None 
@@ -110,19 +88,20 @@ class Japan:
                             print("Building" + e)
 
                 case "list" | "list_provinces" | "l":
-                    self.list_my_provinces()
+                    list_my_provinces(self.provinces)
 
                 case "purchase" | "p":
                     pass
 
                 case "all_buildings" | "ab":
-                    self.list_all_buildings()
+                    list_buildings(self.buildings)
 
                 case "buildings" | "b":
-                    pass
+                    list_buildings(current_province.buildings)
 
                 case "purchsable_buildings" | "pb":
                     pass
+                    purchasable_buildings = current_province.get_purchasable_buildings()
 
                 case "not_purchsable_buildings_yet" | "npb":
                     pass

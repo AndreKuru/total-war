@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from building import Building
+from building import Building, Condition
 from unit import Unit, Category, Weapon
 
 class Minerium(Enum):
@@ -15,6 +15,67 @@ def get_province(provinces: list["Province"], id: str):
             return province
     
     raise Exception("Invalid province.")
+
+def list_my_provinces(provinces: list["Province"]):
+    my_provinces = list()
+    for province in provinces:
+        if province.owned:
+            my_provinces.append(province)
+    
+    for province in my_provinces:
+        spaces = ""
+        for _ in 4 - len(province.id):
+            spaces += " "
+        print(province.id + spaces + "- " + province.name)
+
+def get_purchasable_buildings(all_buildings: list["Building"], my_buildings: list["Building"], 
+water: bool, iron_sand_deposits: bool, minerium: "Minerium",
+legendary_swordman_event: bool, christianity: bool, churches: int, dutch_acceptance: bool):
+    
+    purchasable_buildings = list()
+    for building in all_buildings:
+        (building_required, condition_required) = building.requires
+        if building_required in my_buildings:
+            match condition_required:
+                case Condition.NOTHING:
+                    purchasable_buildings.append(building)
+
+                case Condition.WATER:
+                    if water:
+                        purchasable_buildings.append(building)
+
+                case Condition.IRON_SAND_DEPOSITS:
+                    if iron_sand_deposits:
+                        purchasable_buildings.append(building)
+
+                case Condition.NATURAL_MINERAL_DEPOSITS:
+                    if minerium.value():
+                        purchasable_buildings.append(building)
+
+                case Condition.LEGENDARY_SWORDMAN_EVENT:
+                    if legendary_swordman_event:
+                        purchasable_buildings.append(building)
+
+                case Condition.CHRISTIANITY:
+                    if christianity:
+                        purchasable_buildings.append(building)
+
+                case Condition.SIX_CHURCHES:
+                    if churches >= 6:
+                        purchasable_buildings.append(building)
+
+                case Condition.DUTCH_ACCEPTANCE:
+                    if dutch_acceptance:
+                        purchasable_buildings.append(building)
+
+                case Condition.BUDDHISM:
+                    if not christianity:
+                        purchasable_buildings.append(building)
+    
+    for building in my_buildings:
+        purchasable_buildings.remove(building)
+
+    return purchasable_buildings
 
 @dataclass
 class Province:

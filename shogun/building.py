@@ -13,27 +13,26 @@ class Condition(Enum):
     DUTCH_ACCEPTANCE = 7
     BUDDHISM = 8
 
+def list_buildings(buildings: list["Building"]):
+    for building in buildings:
+        spaces = ""
+        for _ in 4 - len(building.id):
+            spaces += " "
+        print(building.id + spaces + "- " + building.name + " $" + building.cost + " #" + building.seasons_to_build + " | requires: " + building.requires)
+
+def remove_upgrades(buildings: list["Building"], building: "Building"):
+    if building.upgrades:
+        remove_upgrades(buildings, building.upgrades)
+        buildings.remove(building.upgrades)
 
 
-def get_buildings(buildings: list["Building"], ids: list[str]):
-    selected_buildings = list()
-    breaked = False
+def get_only_upgraded_buildings(buildings: list["Building"]):
+    selected_buildings = buildings.copy()
 
-    for id in ids:
-        for building in buildings:
-            if building.id == id:
-                if building in selected_buildings:
-                    print(building.name  + "duplicate ignored.")
-                else:
-                    selected_buildings.append(building)
-                breaked = True
-                break
-        if not breaked:
-            raise Exception("Building " + id + " not found.")
-        breaked = False
+    for building in selected_buildings:
+        remove_upgrades(selected_buildings, building)
 
     return selected_buildings
-
 
 @dataclass
 class Building:

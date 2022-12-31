@@ -18,6 +18,13 @@ class Weapon(Enum):
     SWORD_AND_NINJA_STARS = 5
     JAVELIN_SWORD_AND_SHIELD = 6
 
+def list_all_units(units: list["Unit"]):
+    for unit in units:
+        spaces = ""
+        for _ in 4 - len(unit.id):
+            spaces += " "
+        print(unit.id + spaces + "- " + unit.name + " $" + unit.cost + " #" + unit.seasons_to_train)
+        
 
 @dataclass
 class Unit:
