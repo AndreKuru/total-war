@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from province import Province, get_province, list_my_provinces
-from building import Building, list_buildings
+from province import Province, get_province, list_my_provinces, get_purchasable_buildings
+from building import Building, list_buildings, remove_all_buildings_upgraded
 from unit import Unit, Agent
 
 class Season(Enum):
@@ -100,8 +100,10 @@ class Japan:
                     list_buildings(current_province.buildings)
 
                 case "purchsable_buildings" | "pb":
-                    pass
-                    purchasable_buildings = current_province.get_purchasable_buildings()
+                    my_buildings = current_province.get_buildings_with_queue()
+                    purchasable_buildings = get_purchasable_buildings(self.buildings, my_buildings, current_province.water, current_province.sand, current_province.minerium, self.legendary_swordman_event, self.christianity, self.churches, self.dutch_acceptance)
+                    remove_all_buildings_upgraded(purchasable_buildings)
+                    list_buildings(purchasable_buildings)
 
                 case "not_purchsable_buildings_yet" | "npb":
                     pass

@@ -28,54 +28,82 @@ def list_my_provinces(provinces: list["Province"]):
             spaces += " "
         print(province.id + spaces + "- " + province.name)
 
-def get_purchasable_buildings(all_buildings: list["Building"], my_buildings: list["Building"], 
+def get_purchasable_and_owned_buildings(all_buildings: list["Building"], my_buildings: list["Building"], 
 water: bool, iron_sand_deposits: bool, minerium: "Minerium",
 legendary_swordman_event: bool, christianity: bool, churches: int, dutch_acceptance: bool):
     
-    purchasable_buildings = list()
+    purchasable_and_owned_buildings = list()
     for building in all_buildings:
-        (building_required, condition_required) = building.requires
-        if building_required in my_buildings:
-            match condition_required:
-                case Condition.NOTHING:
-                    purchasable_buildings.append(building)
+        purchasable = True
+        for required in building.requires:
+            if isinstance(required, Building):
+                if required not in my_buildings:
+                    purchasable = False
+                    break
+            else:
+                match required:
+                    case Condition.NOTHING:
+                        pass
 
-                case Condition.WATER:
-                    if water:
-                        purchasable_buildings.append(building)
+                    case Condition.WATER:
+                        if not water:
+                            purchasable = False
+                            break
 
-                case Condition.IRON_SAND_DEPOSITS:
-                    if iron_sand_deposits:
-                        purchasable_buildings.append(building)
+                    case Condition.IRON_SAND_DEPOSITS:
+                        if not iron_sand_deposits:
+                            purchasable = False
+                            break
 
-                case Condition.NATURAL_MINERAL_DEPOSITS:
-                    if minerium.value():
-                        purchasable_buildings.append(building)
+                    case Condition.NATURAL_MINERAL_DEPOSITS:
+                        if not minerium.value():
+                            purchasable = False
+                            break
 
-                case Condition.LEGENDARY_SWORDMAN_EVENT:
-                    if legendary_swordman_event:
-                        purchasable_buildings.append(building)
+                    case Condition.LEGENDARY_SWORDMAN_EVENT:
+                        if not legendary_swordman_event:
+                            purchasable = False
+                            break
 
-                case Condition.CHRISTIANITY:
-                    if christianity:
-                        purchasable_buildings.append(building)
+                    case Condition.CHRISTIANITY:
+                        if not christianity:
+                            purchasable = False
+                            break
 
-                case Condition.SIX_CHURCHES:
-                    if churches >= 6:
-                        purchasable_buildings.append(building)
+                    case Condition.SIX_CHURCHES:
+                        if churches < 6:
+                            purchasable = False
+                            break
 
-                case Condition.DUTCH_ACCEPTANCE:
-                    if dutch_acceptance:
-                        purchasable_buildings.append(building)
+                    case Condition.DUTCH_ACCEPTANCE:
+                        if not dutch_acceptance:
+                            purchasable = False
+                            break
 
-                case Condition.BUDDHISM:
-                    if not christianity:
-                        purchasable_buildings.append(building)
+                    case Condition.BUDDHISM:
+                        if christianity:
+                            purchasable = False
+                            break
+
+        # end for required    
+        if purchasable:
+            purchasable_and_owned_buildings.append(building)
+
+    # end for building
+
+    return purchasable_and_owned_buildings
+
+def get_purchasable_buildings(all_buildings: list["Building"], my_buildings: list["Building"], 
+water: bool, iron_sand_deposits: bool, minerium: "Minerium",
+legendary_swordman_event: bool, christianity: bool, churches: int, dutch_acceptance: bool):
+
+    buildings = get_purchasable_and_owned_buildings(all_buildings, my_buildings, water, iron_sand_deposits, minerium, legendary_swordman_event, christianity, churches, dutch_acceptance)
     
     for building in my_buildings:
-        purchasable_buildings.remove(building)
+        buildings.remove(building)
 
-    return purchasable_buildings
+    return buildings
+
 
 @dataclass
 class Province:
@@ -84,6 +112,7 @@ class Province:
     farm_income: int
 
     water: bool = False
+    sand: bool = False
     minerium: "Minerium" = 0
     bonus: str | "Category" | "Weapon" | None = None
     owned: bool = False
@@ -93,6 +122,11 @@ class Province:
 
     buildings_queue: list["Building"] = field(default_factory=list)
     units_queue: list["Unit"] = field(default_factory=list)
+
+    def get_buildings_with_queue(self):
+        buildings = self.buildings.copy()
+        buildings += self.buildings_queue
+        return buildings
 
     def insert_upgradeds(self, building: "Building"):
         if building.upgrades:

@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 from unit import Unit
 
@@ -20,26 +20,22 @@ def list_buildings(buildings: list["Building"]):
             spaces += " "
         print(building.id + spaces + "- " + building.name + " $" + building.cost + " #" + building.seasons_to_build + " | requires: " + building.requires)
 
-def remove_upgrades(buildings: list["Building"], building: "Building"):
+def remove_buildings_upgraded(buildings: list["Building"], building: "Building"):
     if building.upgrades:
-        remove_upgrades(buildings, building.upgrades)
+        remove_buildings_upgraded(buildings, building.upgrades)
         buildings.remove(building.upgrades)
 
 
-def get_only_upgraded_buildings(buildings: list["Building"]):
-    selected_buildings = buildings.copy()
-
-    for building in selected_buildings:
-        remove_upgrades(selected_buildings, building)
-
-    return selected_buildings
+def remove_all_buildings_upgraded(buildings: list["Building"]):
+    for building in buildings:
+        remove_buildings_upgraded(buildings, building)
 
 @dataclass
 class Building:
     id: str
     name: str
     cost: int
-    requires: list["Building" | "Condition"]            # TODO: redo the read_building
-    produces: tuple["Unit", "Building" | "Condition"]   # TODO: redo the read_building
-    upgrades: "Building"                                # TODO: redo the read_building
     seasons_to_build: int
+    requires: list["Building" | "Condition"] = field(default_factory=lambda: [Condition.NOTHING]) # lambda? # TODO: redo the read_building
+    produces: list[tuple["Unit", "Building" | "Condition"]] = field(default_factory=list)         # Talvez não precise de Condition # TODO: redo the read_building
+    upgrades: "Building" = None                                                                   # TODO: redo the read_building
