@@ -1,10 +1,10 @@
+from copy import deepcopy
 from dataclasses import dataclass, field
 from enum import Enum
-from building import Building, Condition
+from building import Building, Condition, Boost
 from unit import Unit, Category, Weapon
 
 class Minerium(Enum):
-    NOTHING = 0
     COPPER = 1
     SILVER = 2
     GOLD = 3
@@ -46,9 +46,6 @@ legendary_swordman_event: bool, christianity: bool, churches: int, dutch_accepta
                     break
             elif isinstance(required, Condition):
                 match required:
-                    case Condition.NOTHING:
-                        pass
-
                     case Condition.WATER:
                         if not water:
                             purchasable = False
@@ -154,6 +151,39 @@ legendary_swordman_event: bool, christianity: bool, churches: int, dutch_accepta
 
     return not_purchasable_buildings_yet
 
+def get_purchasable_units_and_boosts(all_units: list["Unit"], my_buildings: list["Building"]):
+    purchasable_units = list()
+    boost_attack = 0
+    boost_armor = 0
+    boost_rally = False
+    for building in my_buildings:
+        if building.produces:
+            (produced_unit_id, building_required) = building.produces
+            if building_required and building_required in my_buildings:
+                new_unit = True
+                for unit in purchasable_units:
+                    if unit.id == produced_unit_id:
+                        new_unit = False
+                        unit.boost_morale += 1
+                        break
+                if new_unit:
+                    for unit in all_units:
+                        if unit.id == produced_unit_id:
+                            purchasable_units.append(deepcopy(unit))
+        elif building.boost:
+            match building.boost:
+                case Boost.ATTACK:
+                    boost_attack += 1
+
+                case Boost.ARMOR:
+                    boost_armor += 1
+
+                case Boost.RALLY:
+                    boost_rally = True
+
+    
+    return purchasable_units, boost_attack, boost_armor, boost_rally
+
 @dataclass
 class Province:
     id: str
@@ -162,12 +192,12 @@ class Province:
 
     water: bool = False
     sand: bool = False
-    minerium: "Minerium" = 0
+    minerium: "Minerium" = None
     bonus: str | "Category" | "Weapon" | None = None
     owned: bool = False
 
-    buildings: list["Building"] = field(default_factory=list)
-    units_trainable: list["Unit"] = field(default_factory=list)
+    buildings: list["Building"] = field(default_factory=list) # buildings constructed
+    units: list["Unit"] = field(default_factory=list)         # units trainable with buildings constructed
 
     buildings_queue: list["Building"] = field(default_factory=list)
     units_queue: list["Unit"] = field(default_factory=list)

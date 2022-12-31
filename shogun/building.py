@@ -3,7 +3,6 @@ from enum import Enum
 from unit import Unit
 
 class Condition(Enum):
-    NOTHING = 0
     WATER = 1
     IRON_SAND_DEPOSITS = 2
     NATURAL_MINERAL_DEPOSITS = 3
@@ -12,6 +11,11 @@ class Condition(Enum):
     SIX_CHURCHES = 6
     DUTCH_ACCEPTANCE = 7
     BUDDHISM = 8
+
+class Boost(Enum):
+    ATTACK = 1
+    ARMOR = 2
+    RALLY = 3
 
 def list_buildings(buildings: list["Building"]):
     for building in buildings:
@@ -36,6 +40,7 @@ class Building:
     name: str
     cost: int
     seasons_to_build: int
-    requires: list["Condition" | "Building" | list["Building"] ] = field(default_factory=lambda: [Condition.NOTHING]) # lambda? # TODO: redo the read_building
-    produces: list[tuple["Unit", "Building" | "Condition"]] = field(default_factory=list)         # Talvez não precise de Condition # TODO: redo the read_building
-    upgrades: "Building" = None                                                                   # TODO: redo the read_building
+    requires: list["Condition" | "Building" | list["Building"] | None] = field(default_factory=lambda: [None])  # lambda? # TODO: redo the read_building
+    produces: list[tuple[str, "Building" | None]] = field(default_factory=list)                                 # Talvez não precise de Condition # TODO: redo the read_building
+    upgrades: "Building" | None = None                                                                          # TODO: redo the read_building
+    boost: "Boost" | None = None # Preciso explicitar o None?

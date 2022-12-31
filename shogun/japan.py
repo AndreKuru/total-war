@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from province import Province, get_province, list_my_provinces, get_purchasable_buildings, get_not_purchasable_buildings_yet
 from building import Building, list_buildings, remove_all_buildings_upgraded
-from unit import Unit, Agent
+from unit import Unit, Agent, list_units
 
 class Season(Enum):
     SPRING = 0 # new year
@@ -126,15 +126,15 @@ class Japan:
                     list_buildings(not_purchasable_buildings_yet)
 
                 case "all_units" | "au":
-                    self.list_all_units()
+                    list_units(self.units)
 
                 case "units" | "u":
+                    list_units(current_province.unit)
+
+                case "purchasable_units" | "pu":
                     pass
 
-                case "purchsable_units" | "pu":
-                    pass
-
-                case "not_purchsable_units_yet" | "npu":
+                case "not_purchasable_units_yet" | "npu":
                     pass
 
                 case "show_queue_by_season" | "q":
