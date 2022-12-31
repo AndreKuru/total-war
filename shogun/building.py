@@ -36,6 +36,6 @@ class Building:
     name: str
     cost: int
     seasons_to_build: int
-    requires: list["Building" | "Condition"] = field(default_factory=lambda: [Condition.NOTHING]) # lambda? # TODO: redo the read_building
+    requires: list["Condition" | "Building" | list["Building"] ] = field(default_factory=lambda: [Condition.NOTHING]) # lambda? # TODO: redo the read_building
     produces: list[tuple["Unit", "Building" | "Condition"]] = field(default_factory=list)         # Talvez não precise de Condition # TODO: redo the read_building
     upgrades: "Building" = None                                                                   # TODO: redo the read_building

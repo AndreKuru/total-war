@@ -40,7 +40,11 @@ legendary_swordman_event: bool, christianity: bool, churches: int, dutch_accepta
                 if required not in my_buildings:
                     purchasable = False
                     break
-            else:
+            elif isinstance(required, list):
+                if not set(required) & set(my_buildings): # If none of the buildings required are my
+                    purchasable = False
+                    break
+            elif isinstance(required, Condition):
                 match required:
                     case Condition.NOTHING:
                         pass
@@ -104,6 +108,51 @@ legendary_swordman_event: bool, christianity: bool, churches: int, dutch_accepta
 
     return buildings
 
+# Remove building if impossible in province and it's building requiremnts
+def is_possible_in_province(building: "Building",
+water: bool, iron_sand_deposits: bool, minerium: "Minerium"):
+    for required in building.requires:
+        if isinstance(required, Building):
+            if not is_possible_in_province(building, water, iron_sand_deposits, minerium):
+                return False
+        else:
+            match required:
+                case Condition.WATER:
+                    if not water:
+                        return False
+            
+                case Condition.IRON_SAND_DEPOSITS:
+                    if not iron_sand_deposits:
+                        return False
+            
+                case Condition.NATURAL_MINERAL_DEPOSITS:
+                    if not minerium:
+                        return False
+                
+                case _:
+                    pass
+    
+    # end for required
+    return True
+            
+
+def get_not_purchasable_buildings_yet(all_buildings: list["Building"], my_buildings: list["Building"], 
+water: bool, iron_sand_deposits: bool, minerium: "Minerium",
+legendary_swordman_event: bool, christianity: bool, churches: int, dutch_acceptance: bool):
+
+    purchsable_and_owned_buildings = get_purchasable_and_owned_buildings(all_buildings, my_buildings, water, iron_sand_deposits, minerium, legendary_swordman_event, christianity, churches, dutch_acceptance)
+
+    not_purchasable_buildings = list()
+    for building in all_buildings:
+        if building not in purchsable_and_owned_buildings:
+            not_purchasable_buildings.append(building)
+    
+    not_purchasable_buildings_yet = list()
+    for building in not_purchasable_buildings:
+        if is_possible_in_province(building, water, iron_sand_deposits, minerium):
+            not_purchasable_buildings_yet.append(building)
+
+    return not_purchasable_buildings_yet
 
 @dataclass
 class Province:
@@ -158,7 +207,7 @@ class Province:
                 self.remove_upgradeds(building)
                 self.buildings.remove(building)
 
-    def end_season_from_building_queue(self):
+    def end_season_from_buildings_queue(self):
         seasons = 0
         for building in self.buildings_queue:
             seasons += building.seasons_to_build
@@ -170,7 +219,7 @@ class Province:
         elif building in self.buildings_queue:
             raise Exception(building.name + " already in queue.")
         else:
-            debt = (self.end_season_from_building_queue(), building.cost)
+            debt = (self.end_season_from_buildings_queue(), building.cost)
             self.buildings_queue.append(building)
             return debt
 

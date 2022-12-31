@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from province import Province, get_province, list_my_provinces, get_purchasable_buildings
+from province import Province, get_province, list_my_provinces, get_purchasable_buildings, get_not_purchasable_buildings_yet
 from building import Building, list_buildings, remove_all_buildings_upgraded
 from unit import Unit, Agent
 
@@ -28,6 +28,20 @@ def get_instances(collection: list["Unit"] | list["Agent"] | list["Building"] | 
         breaked = False
 
     return selected_instances
+
+def print_end_season_from_queue(current_year: int, seasons: int, province: Province):
+    year = current_year + (seasons // 4)
+    season = Season(seasons % 4)
+    print("Province:" + province.name + " - " + str(year) + " " + season.name)
+
+def print_end_season_from_buildings_queue(current_year: int, current_season: Season, province: Province):
+    seasons = province.end_season_from_buildings_queue() + current_season.value
+    print_end_season_from_queue(current_year, seasons, province)
+
+def print_end_season_from_units_queue(current_year: int, current_season: Season, province: Province):
+    pass
+    # seasons = province.end_season_from_units_queue() + current_season.value
+    # print_end_season_from_queue(current_year, seasons, province)
 
 @dataclass
 class Japan:
@@ -103,10 +117,13 @@ class Japan:
                     my_buildings = current_province.get_buildings_with_queue()
                     purchasable_buildings = get_purchasable_buildings(self.buildings, my_buildings, current_province.water, current_province.sand, current_province.minerium, self.legendary_swordman_event, self.christianity, self.churches, self.dutch_acceptance)
                     remove_all_buildings_upgraded(purchasable_buildings)
+                    print_end_season_from_buildings_queue(self.current_year, self.current_season, current_province)
                     list_buildings(purchasable_buildings)
 
-                case "not_purchsable_buildings_yet" | "npb":
-                    pass
+                case "not_purchasable_buildings_yet" | "npb":
+                    my_buildings = current_province.get_buildings_with_queue()
+                    not_purchasable_buildings_yet = get_not_purchasable_buildings_yet(self.buildings, my_buildings, current_province.water, current_province.sand, current_province.minerium, self.legendary_swordman_event, self.christianity, self.churches, self.dutch_acceptance)
+                    list_buildings(not_purchasable_buildings_yet)
 
                 case "all_units" | "au":
                     self.list_all_units()
