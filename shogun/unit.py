@@ -23,7 +23,10 @@ def list_units(units: list["Unit"]):
         spaces = ""
         for _ in 4 - len(unit.id):
             spaces += " "
-        print(unit.id + spaces + "- " + unit.name + " $" + unit.cost + " #" + unit.seasons_to_train)
+        morale = ""
+        for _ in unit.morale_boost:
+            morale += "+"
+        print(unit.id + spaces + "- " + unit.name + morale + " $" + unit.cost + " #" + unit.seasons_to_train)
         
 
 @dataclass

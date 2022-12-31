@@ -184,6 +184,56 @@ def get_purchasable_units_and_boosts(all_units: list["Unit"], my_buildings: list
     
     return purchasable_units, boost_attack, boost_armor, boost_rally
 
+def get_not_purchasable_units(all_units: list["Unit"], my_buildings: list["Building"]):
+    purchasable_units, _, _, _ = get_purchasable_units_and_boosts(all_units, my_buildings)
+
+    not_purchasable_units_id = list()
+    for unit in all_units:
+        not_purchasable_units_id.append(unit.id)
+
+    for purchsable_unit in purchasable_units:
+        try:
+            not_purchasable_units_id.remove(purchsable_unit.id)
+        except ValueError:
+            pass
+
+    not_purchasable_units = list()
+    for id in not_purchasable_units:
+        for unit in all_units:
+            if unit.id == id:
+                not_purchasable_units.append(unit)
+            
+    return not_purchasable_units
+
+def get_buildings_with_queue(my_buildilngs: list["Building"], buildings_queue: list["Building"]):
+    buildings = my_buildilngs.copy()
+    buildings += buildings_queue
+    return buildings
+
+
+def get_buildings_with_queue_until(my_buildilngs: list["Building"], buildings_queue: list["Building"], seasons_in_advance: int):
+    buildings = my_buildilngs.copy()
+
+    seasons_in_advance -= buildings[0]
+    if seasons_in_advance == 0:
+        buildings.append(building)
+
+    elif seasons_in_advance > 0:
+        buildings.append(building)
+
+        for building in buildings_queue[1:]:
+            seasons_in_advance -= building.seasons_to_build
+            if seasons_in_advance > 0:
+                buildings.append(building)
+            elif seasons_in_advance == 0:
+                buildings.append(building)
+                break
+            else:
+                break
+
+    return buildings
+
+
 @dataclass
 class Province:
     id: str
@@ -200,12 +250,9 @@ class Province:
     units: list["Unit"] = field(default_factory=list)         # units trainable with buildings constructed
 
     buildings_queue: list["Building"] = field(default_factory=list)
+    buildings_queue_time: int = 0 # time remaining for the first building in the queue
     units_queue: list["Unit"] = field(default_factory=list)
-
-    def get_buildings_with_queue(self):
-        buildings = self.buildings.copy()
-        buildings += self.buildings_queue
-        return buildings
+    units_queue_time: int = 0 # time remaining for the first unit in the queue
 
     def insert_upgradeds(self, building: "Building"):
         if building.upgrades:
@@ -237,10 +284,16 @@ class Province:
                 self.remove_upgradeds(building)
                 self.buildings.remove(building)
 
-    def end_season_from_buildings_queue(self):
+    def seasons_to_end_buildings_queue(self):
         seasons = 0
         for building in self.buildings_queue:
             seasons += building.seasons_to_build
+        return seasons
+
+    def seasons_to_end_units_queue(self):
+        seasons = 0
+        for unit in self.units_queue:
+            seasons += unit.seasons_to_train
         return seasons
 
     def purchase_building(self, building: "Building"):
@@ -249,7 +302,7 @@ class Province:
         elif building in self.buildings_queue:
             raise Exception(building.name + " already in queue.")
         else:
-            debt = (self.end_season_from_buildings_queue(), building.cost)
+            debt = (self.seasons_to_end_buildings_queue(), building.cost)
             self.buildings_queue.append(building)
             return debt
 
