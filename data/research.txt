@@ -1,0 +1,198 @@
+Archery Dojo
+Famous Archery Dojo
+Legendary Archery Dojo
+Spear Dojo
+Famous Spear Dojo
+Legendary Spear Dojo
+Horse Dojo
+Famous Horse Dojo
+Legendary Horse Dojo
+Sword Dojo
+Famous Sword Dojo
+Legendary Sword Dojo
+Swordsmith
+Famous Swordsmith
+Legendary Swordsmith
+Armoury
+Famous Armoury
+Legendary Armoury
+Tea House
+Famous Tea House
+Legendary Tea House
+Buddhist Temple
+Famous Buddhist Temple
+Temple Complex
+Ninja House
+Infamous Ninja House
+Geisha House
+
+Castle
+Large Castle
+Fortress
+Citadel
+
+Palace
+Golden Palace
+Legendary Palace
+
+Border Watch Towers
+Border Forts
+
+Improved Farmland
+Superior Farmland
+Exceptional Farmland
+Legendary Farmland
+
+Mine
+Mine Complex
+
+Tranquil Garden
+
+Church
+Cathedral
+
+Port
+Portuguese Trading Post
+Gun Factory
+Dutch Trading Post
+
+Battlefield Ninja Dojo
+Drill Dojo
+
+ad
+sd
+hd
+sw
+sm
+ar
+th
+bt
+tc
+nh
+inh
+gh
+ct
+lct
+frt
+ctd
+pl
+gpl
+lpl
+bwt
+bft
+ifr
+sfr
+efr
+lfr
+mn
+mnc
+trg
+ch
+cth
+pt
+ptp
+gfc
+dtp
+bnd
+
+japan
+all_provinces
+all_buildings
+all_units
+current_season
+current_year
+provinces_owned
+current_money
+debts_by_season
+
+
+Province
+id
+name
+owned
+bonus
+water
+minerium
+all_buildings_by_season
+purchasable_buildings_by_season
+(for_later)not_purchasable_buildings_yet_by_season
+all_units_by_season
+purchasable_units_by_season
+buildings_queue
+units_queue
+
+Building
+id
+name
+cost
+requires
+produces
+upgrades
+seasons_to_build
+
+Unit
+id
+category
+class
+soldiers
+weapon_type
+morale_boost
+attack_boost
+armor_boost
+
+select province
+list all provinces
+list all buildings
+list purchasable buildings
+list not purchasable buildins (excluding lesser buildings)
+list purchasable units
+list not purchasable units
+insert a building
+remove a building
+purchase a building
+show queue by season
+show queue by purchase
+show money in each season
+update current money
+
+Starting to build/train: $
+Building/Training: #
+Conclude: !!
+
+É possível voltar para o budismo depois de aceitar o cristianismo?
+Qual ano os holandeses chegam?
+Ao aceitar os holandeses continua-se budista?
+É possível possuir uma igreja e uma catedral simultaneamente em um território?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+30 - 14.68 = 15.32
