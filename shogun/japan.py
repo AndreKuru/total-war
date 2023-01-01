@@ -4,6 +4,8 @@ from province import Province, get_province, list_my_provinces, get_purchasable_
 from building import Building, list_buildings, remove_all_buildings_upgraded
 from unit import Unit, Agent, list_units
 
+TITLE_LEN = 15
+
 class Season(Enum):
     SPRING = 0 # new year
     SUMMER = 1 # new game
@@ -48,6 +50,81 @@ boost_attack: int, boost_armor: int, boost_rally: bool):
         print("Boost Rally: Yes")
     else:
         print("Boost Rally: No")
+
+def print_queues_by_season(buildings_queue: list["Building"], buildings_queue_time: int, units_queue: list["Unit"], units_queue_time: int, current_year: int, current_season: Season):
+
+    if len(buildings_queue[0].name) > TITLE_LEN:
+        max_str = len(buildings_queue[0].name)
+    else:
+        max_str = TITLE_LEN # len("BUILDINGS QUEUE")
+    
+    # create buildings list to print
+    if len(buildings_queue):
+        buildings_queue_by_season = [buildings_queue[0].name]
+        for _ in buildings_queue_time - 1:
+            buildings_queue_by_season.append("#")
+
+        for building in buildings_queue:
+            if len(building.name) > max_str:
+                max_str = len(building.name)
+            
+            buildings_queue_by_season.append(building.name)
+            for _ in building.seasons_to_build - 1:
+                buildings_queue_by_season.append("#")
+
+        initial_building = buildings_queue_by_season[0]
+    else:
+        initial_building = ""
+
+    # create units list to print
+    if len(units_queue):
+        units_queue_by_season = [units_queue[0].name]
+        for _ in units_queue_time - 1:
+            units_queue_by_season.append("#")
+
+        for unit in units_queue:
+            units_queue_by_season.append(unit.name)
+            for _ in unit.seasons_to_train - 1:
+                units_queue_by_season.append("#")
+
+        initial_unit = units_queue_by_season[0]
+    else:
+        initial_unit = ""
+
+    spaces += ""
+    for _ in max_str - TITLE_LEN:
+        spaces += " "
+
+        # "YEAR.SEASON"
+    print("           " + " BUILDINGS QUEUE" + spaces + " | UNITS QUEUE")
+
+    for _ in TITLE_LEN:
+        spaces += " "
+
+    print(str(current_year) + "." + current_season.name + " " + initial_building + spaces + " | " + initial_unit)
+    for i in range(1, max(len(buildings_queue_by_season), len(units_queue_by_season))):
+
+        if current_season == Season.WINTER:
+            current_season = Season.SPRING
+            current_year += 1
+        else:
+            current_season = Season(current_season.value + 1)
+
+
+        # print year and season
+        print(str(current_year) + "." + current_season.name, end=" ")
+
+        # print building in season
+        if i < len(buildings_queue_by_season):
+            print(buildings_queue_by_season[i], end="")
+        else:
+            print(spaces)
+
+        # print unit in season
+        if i < len(units_queue_by_season):
+            print(" | " + units_queue_by_season[i])
+        else:
+            print(" | " )
 
 @dataclass
 class Japan:
@@ -117,44 +194,66 @@ class Japan:
                     list_buildings(self.buildings)
 
                 case "buildings" | "b":
-                    list_buildings(current_province.buildings)
+                    if current_province == None:
+                        print("No province selected.")
+                    else:
+                        list_buildings(current_province.buildings)
 
                 case "purchsable_buildings" | "pb":
-                    my_buildings_with_queue = get_buildings_with_queue(current_province.buildings, current_province.buildings_queue)
-                    purchasable_buildings = get_purchasable_buildings(self.buildings, my_buildings_with_queue, current_province.water, current_province.sand, current_province.minerium, self.legendary_swordman_event, self.christianity, self.churches, self.dutch_acceptance)
-                    remove_all_buildings_upgraded(purchasable_buildings)
-                    print_province_and_season_after_buildings_queue(self.current_year, self.current_season, current_province)
-                    list_buildings(purchasable_buildings)
+                    if current_province == None:
+                        print("No province selected.")
+                    else:
+                        my_buildings_with_queue = get_buildings_with_queue(current_province.buildings, current_province.buildings_queue)
+                        purchasable_buildings = get_purchasable_buildings(self.buildings, my_buildings_with_queue, current_province.water, current_province.sand, current_province.minerium, self.legendary_swordman_event, self.christianity, self.churches, self.dutch_acceptance)
+                        remove_all_buildings_upgraded(purchasable_buildings)
+                        print_province_and_season_after_buildings_queue(self.current_year, self.current_season, current_province)
+                        list_buildings(purchasable_buildings)
 
                 case "not_purchasable_buildings_yet" | "npb":
-                    my_buildings_with_queue = get_buildings_with_queue(current_province.buildings, current_province.buildings_queue)
-                    not_purchasable_buildings_yet = get_not_purchasable_buildings_yet(self.buildings, my_buildings_with_queue, current_province.water, current_province.sand, current_province.minerium, self.legendary_swordman_event, self.christianity, self.churches, self.dutch_acceptance)
-                    list_buildings(not_purchasable_buildings_yet)
+                    if current_province == None:
+                        print("No province selected.")
+                    else:
+                        my_buildings_with_queue = get_buildings_with_queue(current_province.buildings, current_province.buildings_queue)
+                        not_purchasable_buildings_yet = get_not_purchasable_buildings_yet(self.buildings, my_buildings_with_queue, current_province.water, current_province.sand, current_province.minerium, self.legendary_swordman_event, self.christianity, self.churches, self.dutch_acceptance)
+                        list_buildings(not_purchasable_buildings_yet)
 
                 case "all_units" | "au":
                     list_units(self.units)
 
-                case "units" | "u":
-                    list_units(current_province.unit)
-
                 case "purchasable_units" | "pu":
-                    seasons = current_province.seasons_to_end_units_queue
-                    my_buildings_with_queue = get_buildings_with_queue_until(current_province.buildings, current_province.buildings_queue, seasons)
-                    purchasable_units, boost_attack, boost_armor, boost_rally = get_purchasable_units_and_boosts(self.units, my_buildings_with_queue)
-                    print_province_and_season_after_units_queue(self.current_year, self.current_season, current_province, boost_attack, boost_armor, boost_rally)
-                    list_units(purchasable_units)
+                    if current_province == None:
+                        print("No province selected.")
+                    else:
+                        seasons = current_province.seasons_to_end_units_queue
+                        my_buildings_with_queue = get_buildings_with_queue_until(current_province.buildings, current_province.buildings_queue, seasons)
+                        purchasable_units, boost_attack, boost_armor, boost_rally = get_purchasable_units_and_boosts(self.units, my_buildings_with_queue)
+                        print_province_and_season_after_units_queue(self.current_year, self.current_season, current_province, boost_attack, boost_armor, boost_rally)
+                        list_units(purchasable_units)
 
                 case "not_purchasable_units" | "npu":
-                    seasons = current_province.seasons_to_end_units_queue
-                    my_buildings_with_queue = get_buildings_with_queue_until(current_province.buildings, current_province.buildings_queue, seasons)
-                    not_purchasable_units = get_not_purchasable_units(self.units, my_buildings_with_queue)
-                    list_units(not_purchasable_units)
+                    if current_province == None:
+                        print("No province selected.")
+                    else:
+                        seasons = current_province.seasons_to_end_units_queue
+                        my_buildings_with_queue = get_buildings_with_queue_until(current_province.buildings, current_province.buildings_queue, seasons)
+                        not_purchasable_units = get_not_purchasable_units(self.units, my_buildings_with_queue)
+                        list_units(not_purchasable_units)
+
+                case "show_queues_in_province" | "q":
+                    if current_province == None:
+                        print("No province selected.")
+                    else:
+                        print_queues_by_season(current_province.buildings_queue,
+                                               current_province.buildings_queue_time,
+                                               current_province.units_queue,
+                                               current_province.units_queue_time,
+                                               self.current_year,
+                                               self.current_season) # Por que current_season n é sobreescrito?
+
+                case "show_all_buildings_queues" | "qb":
                     pass
 
-                case "show_queue_by_season" | "q":
-                    pass
-
-                case "show_queue_by_purchase" | "qp":
+                case "show_all_units_queues" | "qu":
                     pass
 
                 case "show_money" | "m":
