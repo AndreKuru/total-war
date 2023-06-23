@@ -1,9 +1,9 @@
-from japan import Japan
+from pathlib import Path
 from province import Province, Minerium
 from building import Building
 from unit import Unit, Category, Class, Weapon
 
-def read_units(file_path):
+def read_units(file_path: Path):
     file = open(file_path, "r")
     file_lines = file.readlines()
     file_lines = [line.rstrip("\n") for line in file_lines]
@@ -44,7 +44,7 @@ def read_units(file_path):
 
     return units
 
-def read_buildings(file_path):
+def read_buildings(file_path: Path):
     file = open(file_path, "r")
     file_lines = file.readlines()
     file_lines = [line.rstrip("\n") for line in file_lines]
@@ -67,7 +67,7 @@ def read_buildings(file_path):
         
     return buildings
 
-def read_provinces(file_path, initial: bool = False):
+def read_provinces(file_path: Path, initial: bool = False):
     file = open(file_path, "r")
     file_lines = file.readlines()
     file_lines = [line.rstrip("\n") for line in file_lines]

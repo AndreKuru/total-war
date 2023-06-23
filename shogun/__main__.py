@@ -1,1 +1,3 @@
-print("Shogun - Total War")
+from app import main
+
+main()

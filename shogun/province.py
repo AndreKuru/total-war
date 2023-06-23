@@ -9,14 +9,89 @@ class Minerium(Enum):
     SILVER = 2
     GOLD = 3
 
-def get_province(provinces: list["Province"], id: str):
+@dataclass
+class Province:
+    id: str
+    name: str
+    farm_income: int
+
+    water: bool = False
+    sand: bool = False
+    minerium: Minerium = None
+    bonus: str | Category | Weapon | None = None
+    owned: bool = False
+
+    buildings: list[Building] = field(default_factory=list) # buildings constructed
+    units: list[Unit] = field(default_factory=list)         # units trainable with buildings constructed
+
+    buildings_queue: list[Building] = field(default_factory=list)
+    buildings_queue_time: int = 0 # time remaining for the first building in the queue
+    units_queue: list[Unit] = field(default_factory=list)
+    units_queue_time: int = 0 # time remaining for the first unit in the queue
+
+    def insert_upgradeds(self, building: Building):
+        if building.upgrades:
+            self.insert_upgradeds(building.upgrades)
+        else:
+            if building not in self.buildings:
+                self.buildings.append(building)
+
+    def insert(self, buildings: list[Building]):
+        for building in buildings:
+            if building in self.buildings:
+                raise Exception(building.name + " already exists")
+            else:
+                self.insert_upgradeds(building)
+                self.buildings.append(building)
+
+    def remove_upgradeds(self, building_to_remove: Building):
+        for building in self.buildings:
+            if building.upgrades == building_to_remove.id:
+                self.remove_upgradeds(building)
+                self.buildings.remove(building)
+                break
+
+    def remove(self, buildings: list[Building]):
+        for building in buildings:
+            if building not in self.buildings:
+                raise Exception(building.name + " not exists")
+            else:
+                self.remove_upgradeds(building)
+                self.buildings.remove(building)
+
+    def seasons_to_end_buildings_queue(self):
+        seasons = 0
+        for building in self.buildings_queue:
+            seasons += building.seasons_to_build
+        return seasons
+
+    def seasons_to_end_units_queue(self):
+        seasons = 0
+        for unit in self.units_queue:
+            seasons += unit.seasons_to_train
+        return seasons
+
+    def purchase_building(self, building: Building):
+        if building in self.buildings:
+            raise Exception(building.name + " already exists.")
+        elif building in self.buildings_queue:
+            raise Exception(building.name + " already in queue.")
+        else:
+            debt = (self.seasons_to_end_buildings_queue(), building.cost)
+            self.buildings_queue.append(building)
+            return debt
+
+    def purchase_unit(self, unit: Unit):
+        pass
+
+def get_province(provinces: list[Province], id: str):
     for province in provinces:
         if province.id == id:
             return province
     
     raise Exception("Invalid province.")
 
-def list_my_provinces(provinces: list["Province"]):
+def list_my_provinces(provinces: list[Province]):
     my_provinces = list()
     for province in provinces:
         if province.owned:
@@ -28,8 +103,8 @@ def list_my_provinces(provinces: list["Province"]):
             spaces += " "
         print(province.id + spaces + "- " + province.name)
 
-def get_purchasable_and_owned_buildings(all_buildings: list["Building"], my_buildings: list["Building"], 
-water: bool, iron_sand_deposits: bool, minerium: "Minerium",
+def get_purchasable_and_owned_buildings(all_buildings: list[Building], my_buildings: list[Building], 
+water: bool, iron_sand_deposits: bool, minerium: Minerium,
 legendary_swordman_event: bool, christianity: bool, churches: int, dutch_acceptance: bool):
     
     purchasable_and_owned_buildings = list()
@@ -94,8 +169,8 @@ legendary_swordman_event: bool, christianity: bool, churches: int, dutch_accepta
 
     return purchasable_and_owned_buildings
 
-def get_purchasable_buildings(all_buildings: list["Building"], my_buildings: list["Building"], 
-water: bool, iron_sand_deposits: bool, minerium: "Minerium",
+def get_purchasable_buildings(all_buildings: list[Building], my_buildings: list[Building], 
+water: bool, iron_sand_deposits: bool, minerium: Minerium,
 legendary_swordman_event: bool, christianity: bool, churches: int, dutch_acceptance: bool):
 
     buildings = get_purchasable_and_owned_buildings(all_buildings, my_buildings, water, iron_sand_deposits, minerium, legendary_swordman_event, christianity, churches, dutch_acceptance)
@@ -106,8 +181,8 @@ legendary_swordman_event: bool, christianity: bool, churches: int, dutch_accepta
     return buildings
 
 # Remove building if impossible in province and it's building requiremnts
-def is_possible_in_province(building: "Building",
-water: bool, iron_sand_deposits: bool, minerium: "Minerium"):
+def is_possible_in_province(building: Building,
+water: bool, iron_sand_deposits: bool, minerium: Minerium):
     for required in building.requires:
         if isinstance(required, Building):
             if not is_possible_in_province(building, water, iron_sand_deposits, minerium):
@@ -133,8 +208,8 @@ water: bool, iron_sand_deposits: bool, minerium: "Minerium"):
     return True
             
 
-def get_not_purchasable_buildings_yet(all_buildings: list["Building"], my_buildings: list["Building"], 
-water: bool, iron_sand_deposits: bool, minerium: "Minerium",
+def get_not_purchasable_buildings_yet(all_buildings: list[Building], my_buildings: list[Building], 
+water: bool, iron_sand_deposits: bool, minerium: Minerium,
 legendary_swordman_event: bool, christianity: bool, churches: int, dutch_acceptance: bool):
 
     purchsable_and_owned_buildings = get_purchasable_and_owned_buildings(all_buildings, my_buildings, water, iron_sand_deposits, minerium, legendary_swordman_event, christianity, churches, dutch_acceptance)
@@ -151,7 +226,7 @@ legendary_swordman_event: bool, christianity: bool, churches: int, dutch_accepta
 
     return not_purchasable_buildings_yet
 
-def get_purchasable_units_and_boosts(all_units: list["Unit"], my_buildings: list["Building"]):
+def get_purchasable_units_and_boosts(all_units: list[Unit], my_buildings: list[Building]):
     purchasable_units = list()
     boost_attack = 0
     boost_armor = 0
@@ -184,7 +259,7 @@ def get_purchasable_units_and_boosts(all_units: list["Unit"], my_buildings: list
     
     return purchasable_units, boost_attack, boost_armor, boost_rally
 
-def get_not_purchasable_units(all_units: list["Unit"], my_buildings: list["Building"]):
+def get_not_purchasable_units(all_units: list[Unit], my_buildings: list[Building]):
     purchasable_units, _, _, _ = get_purchasable_units_and_boosts(all_units, my_buildings)
 
     not_purchasable_units_id = list()
@@ -205,13 +280,13 @@ def get_not_purchasable_units(all_units: list["Unit"], my_buildings: list["Build
             
     return not_purchasable_units
 
-def get_buildings_with_queue(my_buildilngs: list["Building"], buildings_queue: list["Building"]):
+def get_buildings_with_queue(my_buildilngs: list[Building], buildings_queue: list[Building]):
     buildings = my_buildilngs.copy()
     buildings += buildings_queue
     return buildings
 
 
-def get_buildings_with_queue_until(my_buildilngs: list["Building"], buildings_queue: list["Building"], seasons_in_advance: int):
+def get_buildings_with_queue_until(my_buildilngs: list[Building], buildings_queue: list[Building], seasons_in_advance: int):
     buildings = my_buildilngs.copy()
 
     seasons_in_advance -= buildings[0]
@@ -232,79 +307,3 @@ def get_buildings_with_queue_until(my_buildilngs: list["Building"], buildings_qu
                 break
 
     return buildings
-
-
-@dataclass
-class Province:
-    id: str
-    name: str
-    farm_income: int
-
-    water: bool = False
-    sand: bool = False
-    minerium: "Minerium" = None
-    bonus: str | "Category" | "Weapon" | None = None
-    owned: bool = False
-
-    buildings: list["Building"] = field(default_factory=list) # buildings constructed
-    units: list["Unit"] = field(default_factory=list)         # units trainable with buildings constructed
-
-    buildings_queue: list["Building"] = field(default_factory=list)
-    buildings_queue_time: int = 0 # time remaining for the first building in the queue
-    units_queue: list["Unit"] = field(default_factory=list)
-    units_queue_time: int = 0 # time remaining for the first unit in the queue
-
-    def insert_upgradeds(self, building: "Building"):
-        if building.upgrades:
-            self.insert_upgradeds(building.upgrades)
-        else:
-            if building not in self.buildings:
-                self.buildings.append(building)
-
-    def insert(self, buildings: list["Building"]):
-        for building in buildings:
-            if building in self.buildings:
-                raise Exception(building.name + " already exists")
-            else:
-                self.insert_upgradeds(building)
-                self.buildings.append(building)
-
-    def remove_upgradeds(self, building_to_remove: "Building"):
-        for building in self.buildings:
-            if building.upgrades == building_to_remove.id:
-                self.remove_upgradeds(building)
-                self.buildings.remove(building)
-                break
-
-    def remove(self, buildings: list["Building"]):
-        for building in buildings:
-            if building not in self.buildings:
-                raise Exception(building.name + " not exists")
-            else:
-                self.remove_upgradeds(building)
-                self.buildings.remove(building)
-
-    def seasons_to_end_buildings_queue(self):
-        seasons = 0
-        for building in self.buildings_queue:
-            seasons += building.seasons_to_build
-        return seasons
-
-    def seasons_to_end_units_queue(self):
-        seasons = 0
-        for unit in self.units_queue:
-            seasons += unit.seasons_to_train
-        return seasons
-
-    def purchase_building(self, building: "Building"):
-        if building in self.buildings:
-            raise Exception(building.name + " already exists.")
-        elif building in self.buildings_queue:
-            raise Exception(building.name + " already in queue.")
-        else:
-            debt = (self.seasons_to_end_buildings_queue(), building.cost)
-            self.buildings_queue.append(building)
-            return debt
-
-    def purchase_unit(self, unit: "Unit"):
-        pass

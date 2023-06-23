@@ -129,10 +129,10 @@ def print_queues_by_season(buildings_queue: list["Building"], buildings_queue_ti
 @dataclass
 class Japan:
     id: str
-    units: list["Unit"]         # For reference
-    buildings: list["Building"] # For reference
-    provinces: list["Province"]
-    current_season: "Season" = Season.SUMMER
+    units: list[Unit]         # For reference
+    provinces: list[Province] # Trocado de posição com buildings, mas n entendi o erro
+    buildings: list[Building] # For reference
+    current_season: Season = Season.SUMMER
     current_year: int = 1530
     current_money: int = 1000
     debts_by_season: list[int] = field(default_factory=list)
@@ -140,130 +140,120 @@ class Japan:
     christianity: bool = False
     churches: int = 0
     dutch_acceptance: bool = False
+    current_province: Province | None = None 
 
         
-    def run(self):
-        current_province = None 
+    def select(self, input):
+        try:
+            province = get_province(self.provinces, input)
+            if province.owned:
+                self.current_province = province
+            else:
+                raise Exception("Province not owned.")
+        except Exception as e:
+            print(e)
 
-        while True:
-            command = input(id + ":")
-            command = command.split(" ")
+    def insert(self, input):
+        if self.current_province == None:
+            print("No province selected.")
+        elif len(input) == 0:
+            print("No building informed.")
+        else:
+            try:
+                buildings = get_instances(self.buildings, input)
+                self.current_province.insert(buildings)
+            except Exception as e:
+                print("Building" + e)
 
-            match command[0]:
-                case "select" | "s":
-                    try:
-                        province = get_province(self.provinces, command[1])
-                        if province.owned:
-                            current_province = province
-                        else:
-                            raise Exception("Province not owned.")
-                    except Exception as e:
-                        print(e)
+    def remove(self, input):
+        if self.current_province == None:
+            print("No province selected.")
+        elif len(input) == 0:
+            print("No building informed.")
+        else:
+            try:
+                buildings = get_instances(input)
+                self.current_province.remove(buildings)
+            except Exception as e:
+                print("Building" + e)
 
-                case "insert" | "i":
-                    if current_province == None:
-                        print("No province selected.")
-                    elif len(command[1:]) == 0:
-                        print("No building informed.")
-                    else:
-                        try:
-                            buildings = get_instances(self.buildings, command[1:])
-                            current_province.insert(buildings)
-                        except Exception as e:
-                            print("Building" + e)
+    def list_provinces(self):
+        list_my_provinces(self.provinces)
 
-                case "remove" | "r":
-                    if current_province == None:
-                        print("No province selected.")
-                    elif len(command[1:]) == 0:
-                        print("No building informed.")
-                    else:
-                        try:
-                            buildings = get_instances(command[1:])
-                            current_province.remove(buildings)
-                        except Exception as e:
-                            print("Building" + e)
+    def purchase(self):
+        pass
 
-                case "list" | "list_provinces" | "l":
-                    list_my_provinces(self.provinces)
+    def list_all_buildings(self):
+        list_buildings(self.buildings)
 
-                case "purchase" | "p":
-                    pass
+    def list_buildings(self):
+        if self.current_province == None:
+            print("No province selected.")
+        else:
+            list_buildings(self.current_province.buildings)
 
-                case "all_buildings" | "ab":
-                    list_buildings(self.buildings)
+    def purchasable_buildings(self):
+        if self.current_province == None:
+            print("No province selected.")
+        else:
+            my_buildings_with_queue = get_buildings_with_queue(self.current_province.buildings, self.current_province.buildings_queue)
+            purchasable_buildings = get_purchasable_buildings(self.buildings, my_buildings_with_queue, self.current_province.water, self.current_province.sand, self.current_province.minerium, self.legendary_swordman_event, self.christianity, self.churches, self.dutch_acceptance)
+            remove_all_buildings_upgraded(purchasable_buildings)
+            print_province_and_season_after_buildings_queue(self.current_year, self.current_season, self.current_province)
+            list_buildings(purchasable_buildings)
 
-                case "buildings" | "b":
-                    if current_province == None:
-                        print("No province selected.")
-                    else:
-                        list_buildings(current_province.buildings)
+    def not_purchasable_buildings_yet(self):
+        if self.current_province == None:
+            print("No province selected.")
+        else:
+            my_buildings_with_queue = get_buildings_with_queue(self.current_province.buildings, self.current_province.buildings_queue)
+            not_purchasable_buildings_yet = get_not_purchasable_buildings_yet(self.buildings, my_buildings_with_queue, self.current_province.water, self.current_province.sand, self.current_province.minerium, self.legendary_swordman_event, self.christianity, self.churches, self.dutch_acceptance)
+            list_buildings(not_purchasable_buildings_yet)
 
-                case "purchsable_buildings" | "pb":
-                    if current_province == None:
-                        print("No province selected.")
-                    else:
-                        my_buildings_with_queue = get_buildings_with_queue(current_province.buildings, current_province.buildings_queue)
-                        purchasable_buildings = get_purchasable_buildings(self.buildings, my_buildings_with_queue, current_province.water, current_province.sand, current_province.minerium, self.legendary_swordman_event, self.christianity, self.churches, self.dutch_acceptance)
-                        remove_all_buildings_upgraded(purchasable_buildings)
-                        print_province_and_season_after_buildings_queue(self.current_year, self.current_season, current_province)
-                        list_buildings(purchasable_buildings)
+    def list_all_units(self):
+        list_units(self.units)
 
-                case "not_purchasable_buildings_yet" | "npb":
-                    if current_province == None:
-                        print("No province selected.")
-                    else:
-                        my_buildings_with_queue = get_buildings_with_queue(current_province.buildings, current_province.buildings_queue)
-                        not_purchasable_buildings_yet = get_not_purchasable_buildings_yet(self.buildings, my_buildings_with_queue, current_province.water, current_province.sand, current_province.minerium, self.legendary_swordman_event, self.christianity, self.churches, self.dutch_acceptance)
-                        list_buildings(not_purchasable_buildings_yet)
+    def purchasable_units(self):
+        if self.current_province == None:
+            print("No province selected.")
+        else:
+            seasons = self.current_province.seasons_to_end_units_queue
+            my_buildings_with_queue = get_buildings_with_queue_until(self.current_province.buildings, self.current_province.buildings_queue, seasons)
+            purchasable_units, boost_attack, boost_armor, boost_rally = get_purchasable_units_and_boosts(self.units, my_buildings_with_queue)
+            print_province_and_season_after_units_queue(self.current_year, self.current_season, self.current_province, boost_attack, boost_armor, boost_rally)
+            list_units(purchasable_units)
 
-                case "all_units" | "au":
-                    list_units(self.units)
+    def not_purchasable_units(self):
+        if self.current_province == None:
+            print("No province selected.")
+        else:
+            seasons = self.current_province.seasons_to_end_units_queue
+            my_buildings_with_queue = get_buildings_with_queue_until(self.current_province.buildings, self.current_province.buildings_queue, seasons)
+            not_purchasable_units = get_not_purchasable_units(self.units, my_buildings_with_queue)
+            list_units(not_purchasable_units)
 
-                case "purchasable_units" | "pu":
-                    if current_province == None:
-                        print("No province selected.")
-                    else:
-                        seasons = current_province.seasons_to_end_units_queue
-                        my_buildings_with_queue = get_buildings_with_queue_until(current_province.buildings, current_province.buildings_queue, seasons)
-                        purchasable_units, boost_attack, boost_armor, boost_rally = get_purchasable_units_and_boosts(self.units, my_buildings_with_queue)
-                        print_province_and_season_after_units_queue(self.current_year, self.current_season, current_province, boost_attack, boost_armor, boost_rally)
-                        list_units(purchasable_units)
+    def show_queues_in_province(self):
+        if self.current_province == None:
+            print("No province selected.")
+        else:
+            print_queues_by_season(self.current_province.buildings_queue,
+                                    self.current_province.buildings_queue_time,
+                                    self.current_province.units_queue,
+                                    self.current_province.units_queue_time,
+                                    self.current_year,
+                                    self.current_season) # Por que current_season n é sobreescrito?
 
-                case "not_purchasable_units" | "npu":
-                    if current_province == None:
-                        print("No province selected.")
-                    else:
-                        seasons = current_province.seasons_to_end_units_queue
-                        my_buildings_with_queue = get_buildings_with_queue_until(current_province.buildings, current_province.buildings_queue, seasons)
-                        not_purchasable_units = get_not_purchasable_units(self.units, my_buildings_with_queue)
-                        list_units(not_purchasable_units)
+    def show_all_buildings_queues(self):
+        pass
 
-                case "show_queues_in_province" | "q":
-                    if current_province == None:
-                        print("No province selected.")
-                    else:
-                        print_queues_by_season(current_province.buildings_queue,
-                                               current_province.buildings_queue_time,
-                                               current_province.units_queue,
-                                               current_province.units_queue_time,
-                                               self.current_year,
-                                               self.current_season) # Por que current_season n é sobreescrito?
+    def show_all_units_queues(self):
+        pass
 
-                case "show_all_buildings_queues" | "qb":
-                    pass
+    def show_money(self):
+        pass
 
-                case "show_all_units_queues" | "qu":
-                    pass
+    def update_money(self):
+        pass
 
-                case "show_money" | "m":
-                    pass
-
-                case "update_money" | "um":
-                    pass
-
-                case "turn_end" | "t":
-                    pass
-
-                case _:
-                    print("Command invalid. Try again.")
+    def turn_end(self):
+        pass
