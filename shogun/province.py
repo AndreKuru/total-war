@@ -208,7 +208,7 @@ water: bool, iron_sand_deposits: bool, minerium: Minerium):
     return True
             
 
-def get_not_purchasable_buildings_yet(all_buildings: list[Building], my_buildings: list[Building], 
+def get_not_yet_purchasable_buildings(all_buildings: list[Building], my_buildings: list[Building], 
 water: bool, iron_sand_deposits: bool, minerium: Minerium,
 legendary_swordman_event: bool, christianity: bool, churches: int, dutch_acceptance: bool):
 
@@ -219,12 +219,12 @@ legendary_swordman_event: bool, christianity: bool, churches: int, dutch_accepta
         if building not in purchsable_and_owned_buildings:
             not_purchasable_buildings.append(building)
     
-    not_purchasable_buildings_yet = list()
+    not_yet_purchasable_buildings = list()
     for building in not_purchasable_buildings:
         if is_possible_in_province(building, water, iron_sand_deposits, minerium):
-            not_purchasable_buildings_yet.append(building)
+            not_yet_purchasable_buildings.append(building)
 
-    return not_purchasable_buildings_yet
+    return not_yet_purchasable_buildings
 
 def get_purchasable_units_and_boosts(all_units: list[Unit], my_buildings: list[Building]):
     purchasable_units = list()

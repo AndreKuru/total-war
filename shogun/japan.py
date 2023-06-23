@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from province import Province, get_province, list_my_provinces, get_purchasable_buildings, get_not_purchasable_buildings_yet, get_buildings_with_queue, get_buildings_with_queue_until, get_purchasable_units_and_boosts, get_not_purchasable_units
+from province import Province, get_province, list_my_provinces, get_purchasable_buildings, get_not_yet_purchasable_buildings, get_buildings_with_queue, get_buildings_with_queue_until, get_purchasable_units_and_boosts, get_not_purchasable_units
 from building import Building, list_buildings, remove_all_buildings_upgraded
 from unit import Unit, Agent, list_units
 
@@ -202,13 +202,13 @@ class Japan:
             print_province_and_season_after_buildings_queue(self.current_year, self.current_season, self.current_province)
             list_buildings(purchasable_buildings)
 
-    def not_purchasable_buildings_yet(self):
+    def not_yet_purchasable_buildings(self):
         if self.current_province == None:
             print("No province selected.")
         else:
             my_buildings_with_queue = get_buildings_with_queue(self.current_province.buildings, self.current_province.buildings_queue)
-            not_purchasable_buildings_yet = get_not_purchasable_buildings_yet(self.buildings, my_buildings_with_queue, self.current_province.water, self.current_province.sand, self.current_province.minerium, self.legendary_swordman_event, self.christianity, self.churches, self.dutch_acceptance)
-            list_buildings(not_purchasable_buildings_yet)
+            not_yet_purchasable_buildings = get_not_yet_purchasable_buildings(self.buildings, my_buildings_with_queue, self.current_province.water, self.current_province.sand, self.current_province.minerium, self.legendary_swordman_event, self.christianity, self.churches, self.dutch_acceptance)
+            list_buildings(not_yet_purchasable_buildings)
 
     def list_all_units(self):
         list_units(self.units)
