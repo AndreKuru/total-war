@@ -12,7 +12,7 @@ class Season(Enum):
     AUTUMN = 2 # profit arrives on this turn end
     WINTER = 3 # brace yourselves
 
-def get_instances(collection: list["Unit"] | list["Agent"] | list["Building"] | list["Province"], ids: list[str]):
+def get_instances(collection: list[Unit] | list[Agent] | list[Building] | list[Province], ids: list[str]):
     selected_instances = list()
     breaked = False
 
@@ -143,7 +143,7 @@ class Japan:
     current_province: Province | None = None 
 
         
-    def select(self, input):
+    def select(self, input: str):
         try:
             province = get_province(self.provinces, input)
             if province.owned:
@@ -153,26 +153,40 @@ class Japan:
         except Exception as e:
             print(e)
 
-    def insert(self, input):
+    def conquer(self, input: str):
+        if len(input) == 0:
+            print("No province informed.")
+        else:
+            try:
+                provinces: list[Province] = get_instances(self.provinces, input.split(" "))
+                for province in provinces:
+                    if not province.owned:
+                        province.owned = True
+                    else:
+                        raise Exception(f"Province {province.name} already owned.")
+            except Exception as e:
+                print(e)
+
+    def insert(self, input: str):
         if self.current_province == None:
             print("No province selected.")
         elif len(input) == 0:
             print("No building informed.")
         else:
             try:
-                buildings = get_instances(self.buildings, input)
+                buildings = get_instances(self.buildings, input.split(" "))
                 self.current_province.insert(buildings)
             except Exception as e:
                 print("Building" + e)
 
-    def remove(self, input):
+    def remove(self, input: str):
         if self.current_province == None:
             print("No province selected.")
         elif len(input) == 0:
             print("No building informed.")
         else:
             try:
-                buildings = get_instances(input)
+                buildings = get_instances(input.split(" "))
                 self.current_province.remove(buildings)
             except Exception as e:
                 print("Building" + e)

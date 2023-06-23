@@ -15,6 +15,9 @@ class Prompt(Cmd):
 
     def do_select(self, input: str) -> None:
         self.controller.select(input)
+    
+    def do_conquer(self, input: str) -> None:
+        self.controller.conquer(input)
 
     def do_insert(self, input: str) -> None:
         self.controller.insert(input)
@@ -22,7 +25,7 @@ class Prompt(Cmd):
     def do_remove(self, input: str) -> None:
         self.controller.remove(input)
 
-    def do_list_provinces(self) -> None:
+    def do_list_provinces(self, input) -> None:
         self.controller.list_provinces()
 
     def do_purchase(self, input: str) -> None:

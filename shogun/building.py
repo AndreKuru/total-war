@@ -37,7 +37,7 @@ def list_buildings(buildings: list[Building]):
         print(building.id + spaces + "- " + building.name + " $" + str(building.cost) + " #" + str(building.seasons_to_build) + " | requires: " + building.requires)
 
 def remove_buildings_upgraded(buildings: list[Building], building: Building):
-    if building.upgrades:
+    if building.upgrades is not None:
         remove_buildings_upgraded(buildings, building.upgrades)
         buildings.remove(building.upgrades)
 

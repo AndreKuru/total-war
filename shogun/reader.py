@@ -56,11 +56,11 @@ def read_buildings(file_path: Path):
             id = data[0]
             name = data[1]
             cost = int(data[2])
-            requires = data[3]
-            produces = data[4]
-            upgrades = data[5]
-            seasons_to_build = int(data[6])
-            building = Building(id, name, cost, requires, produces, upgrades, seasons_to_build)
+            seasons_to_build = int(data[3])
+            requires = data[4]
+            produces = data[5]
+            upgrades = data[6]
+            building = Building(id, name, cost, seasons_to_build, requires, produces, upgrades)
             buildings.append(building)
         else:
             raise Exception("Building input has incorrect format.")

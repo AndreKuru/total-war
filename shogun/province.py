@@ -99,9 +99,9 @@ def list_my_provinces(provinces: list[Province]):
     
     for province in my_provinces:
         spaces = ""
-        for _ in 4 - len(province.id):
+        for _ in range(4 - len(province.id)):
             spaces += " "
-        print(province.id + spaces + "- " + province.name)
+        print(province.id + spaces + " - " + province.name)
 
 def get_purchasable_and_owned_buildings(all_buildings: list[Building], my_buildings: list[Building], 
 water: bool, iron_sand_deposits: bool, minerium: Minerium,
