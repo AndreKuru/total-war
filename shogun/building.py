@@ -16,7 +16,8 @@ class Condition(Enum):
 class Boost(Enum):
     ATTACK = 1
     ARMOR = 2
-    RALLY = 3
+    MORALE = 3
+    RALLY = 4
 
 @dataclass
 class Building:
@@ -24,9 +25,9 @@ class Building:
     name: str
     cost: int
     seasons_to_build: int
-    requires: list[Condition | Self | list[Self] | None] = field(default_factory=lambda: [None])  # lambda? # TODO: redo the read_building
-    produces: list[tuple[str, Self | None]] = field(default_factory=list)                                 # Talvez não precise de Condition # TODO: redo the read_building
-    upgrades: Self | None = None                                                                          # TODO: redo the read_building
+    upgrades_to: Self | None = None                            # TODO: redo the read_building
+    requires: list[Condition | Self] | None = None
+    produces: list[Unit | tuple[Unit, Self]] | None = None      # Talvez não precise de Condition # TODO: redo the read_building
     boost: Boost | None = None # Preciso explicitar o None?
 
 def list_buildings(buildings: list[Building]):
@@ -37,9 +38,9 @@ def list_buildings(buildings: list[Building]):
         print(building.id + spaces + "- " + building.name + " $" + str(building.cost) + " #" + str(building.seasons_to_build) + " | requires: " + building.requires)
 
 def remove_buildings_upgraded(buildings: list[Building], building: Building):
-    if building.upgrades is not None:
-        remove_buildings_upgraded(buildings, building.upgrades)
-        buildings.remove(building.upgrades)
+    if building.upgrades_to is not None:
+        remove_buildings_upgraded(buildings, building.upgrades_to)
+        buildings.remove(building.upgrades_to)
 
 
 def remove_all_buildings_upgraded(buildings: list[Building]):

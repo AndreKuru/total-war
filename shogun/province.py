@@ -30,8 +30,8 @@ class Province:
     units_queue_time: int = 0 # time remaining for the first unit in the queue
 
     def insert_upgradeds(self, building: Building):
-        if building.upgrades:
-            self.insert_upgradeds(building.upgrades)
+        if building.upgrades_to:
+            self.insert_upgradeds(building.upgrades_to)
         else:
             if building not in self.buildings:
                 self.buildings.append(building)
@@ -46,7 +46,7 @@ class Province:
 
     def remove_upgradeds(self, building_to_remove: Building):
         for building in self.buildings:
-            if building.upgrades == building_to_remove.id:
+            if building.upgrades_to == building_to_remove.id:
                 self.remove_upgradeds(building)
                 self.buildings.remove(building)
                 break
@@ -234,9 +234,10 @@ def get_purchasable_units_and_boosts(all_units: list[Unit], my_buildings: list[B
     for building in my_buildings:
         if building.produces:
             (produced_unit_id, building_required) = building.produces
-            if building_required and building_required in my_buildings:
+            if building_required is None or building_required in my_buildings:
                 new_unit = True
                 for unit in purchasable_units:
+                    unit: Unit
                     if unit.id == produced_unit_id:
                         new_unit = False
                         unit.boost_morale += 1

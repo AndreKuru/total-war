@@ -22,9 +22,9 @@ class Weapon(Enum):
 class Unit:
     id: str
     name: str
-    category: "Category"
-    class_unit: "Class"
-    weapon: "Weapon"
+    category: Category
+    class_unit: Class
+    weapon: Weapon
     soldiers: int
     cost: int
     seasons_to_train: int

@@ -1,0 +1,97 @@
+# Units
+bn;Battlefield Ninja;0;0;Sword and Ninja Stars;12;600;4
+kn;Kensai;0;0;Sword;1;300;2
+ns;Naginata Samurai;0;0;Pole-arm;60;400;1
+ds:No-dachi Samurai;0;0;Sword;60;300;1
+ya:Yari Ashigaru;0;0;Spear;60;100;1
+ys:Yari Samurai;0;0;Spear;60;200;1
+wm:Warrior Monks;0;0;Pole-arm;60;500;1
+aa:Arquebus Ashigaru;0;1;Firearm;60;100;1
+#ac:Ashigaru Crossbowmen;0;1;Crossbow;60;cost;1
+ma:Musketeer Ashigaru;0;1;Firearm;60;175;1
+sa:Samurai Archers;0;1;Bow and Arrow;60;300;1
+hc:Heavy Cavalry;1;0;Sword;60;600;1
+nc:Naginata Cavalry;1;0;Pole-arm;60;450;1
+yc:Yari Cavalry;1;0;Spear;60;500;1
+ca:Cavalry Archers;1;1;Bow and Arrow;60;500;1
+
+# Agents
+lg:Legendary Geisha;500;8;None
+nj:Ninja;200;1;0
+sh:Shinobi;100;1;0
+em:Emissary;100;1;0
+pr:Priest;100;1;0
+
+# Buildlings
+bwt;Border Watch Towers;200;2;bf
+bf;Border Forts;400;2;None;bw
+
+if;Farmlands;250;4;sf
+sf;Farmlands;350;5;ef;if
+ef;Farmlands;450;5;lf;sf
+lf;Farmlands;500;5;None;ef
+
+cs;Castle;250;2;lcs
+lcs;Large Castle;500;4;fr;cs
+fr;Castle;750;5;lcs;cit
+cit;Castle;1500;6;None;fr
+
+mn;Mine;500;4;cmn;3
+cmn;Complex Mine;500;4;None;mn,fr
+
+ad;Archery Dojo;400;2;fad;cs;sa
+fad;Famous Archery Dojo;400;2;lad;ad,cs;sa
+lad;Legendary Archery Dojo;400;2;None;fad,cs;sa
+
+sd;Spear Dojo;250;2;fsd;cs;ya,ys
+fsd;Famous Spear Dojo;250;2;lsd;sd,lcs;ya,ys,ns,ar
+lsd;Legendary Spear Dojo;250;2;None;fsd,cit;ya,ys,ns,ar
+
+hd;Horse Dojo;400;3;fhd;lcs,ad|sp;ca:ad,yc:sd
+fhd;Famous Horse Dojo;400;3;lhd;hd,fr;ca:ad,yc:sd,hc:ar
+lhd;Legendary Horse Dojo;400;3;None;fhd,cit;ca:ad,yc:sd,hc:ar
+
+wd;Sword Dojo;500;4;fwd;4,lcs;ds
+fwd;Famous Sword Dojo;500;4;lwd;fr,wd;ds
+lwd;Legendary Sword Dojo;500;4;None;cit,fwd;ds
+
+bd;Battlefield Ninja Dojo;500;4;None;wd,inh;bn
+
+bt;Buddihst Temple;750;5;fbt;tg,lcas;wm
+fbt;Famous Buddihst Temple;750;5;tc;bt,fr;wm
+tc;Temple Complex;750;5;tc;fbt,fr;wm
+
+ar;Armoury;600;4;far;2,cs;None;2
+far;Famous Armoury;600;4;lar;ar,lc;None;2
+lar;Legendary Armoury;600;4;None;far,fr;None;2
+
+sw;Swordsmith;600;4;fsw;lcs;None;1
+fsw;Famous Swordsmith;600;4;lsw;sw,fr;None;1
+lsw;Legendary Swordsmith;600;4;None;fsw,cit;None;1
+
+pl;Palace;500;4;gpl;lcs;None;3
+gpl;Palace;100;5;lpl;pl,fr;None;3
+lpl;Palace;1500;6;None;gpl,cit;None;3
+
+dd;Drill Dojo;500;5;None;pl;None;4
+
+tg;Tanquil Garden;250;2;None;cs;em
+
+th;Tea House;250;2;fth;cs;sh
+fth;Famous Tea House;250;2;lth;lcs;sh
+lth;Legendary Tea House;250;2;None;fr;sh
+
+nh;Ninja House;400;3;inh;cs;nj
+inh;Infamous Ninja House;400;3;gh;fr;nj
+gh;Geisha House;500;4;None;inh,lth,cit;nj,lg
+
+pt;Port;750;5;None;1,cs;None
+
+ptp;Portuguese Trading Post;500;4;None;5,pt,lcs;aa*,ma*:cat
+dtp;Dutch Trading Post;500;4;None;7,pt,lcs;aa*,ma*
+
+gf;Gun Factory;750;4;None;ptp|dtp,ar,cit;aa*,ma*
+
+ch;Church;400;3;None;5,lcs;pr*
+
+cat;Cathedral;1000;6;None;6,cit;pr*
