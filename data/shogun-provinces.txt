@@ -1,1 +1,61 @@
-bingo;Bingo;130;1
+st;Satsuma;100;0;0;None;ids
+# Osumi
+# Hizen
+# Higo
+# Chikugo
+# Hyuga
+# Chikuzen
+# Buzen
+# Bungo
+# Iyo
+# Nagato
+# Suo
+# Aki
+# Tosa (Ashigaru)
+# Iwami
+# Bingo
+# Izumo
+# Sanuki
+# Bitchu
+# Bizen
+# Awa
+# Mimasaka
+# Hoki
+# Awaji
+# Harima
+# Kii (Monks)
+# Inaba
+# Kawachi
+# Tamba
+# Tajima (Shinobi)
+# Yamato
+# Yamashiro
+# Iga (Ninja)
+# Ise
+# Omi
+# Wakasa
+# Owari (Ashigaru)
+# Mikawa
+# Mino
+# Echizen
+# Totomi (Archer)
+# Kaga (Monks)
+# Hida
+# Noto
+# Suruga
+# Izu
+# Shinano (Cavalry)
+# Kai
+# Etchu
+# Sagami
+# Kazusa (Emissary)
+# Musashi
+# Echigo
+# Kozuke
+# Shimosa
+# Shimotsuke
+# Sado
+# Hitachi
+# Dewa
+# Mutsu
+# 

@@ -17,9 +17,9 @@ class Province:
 
     water: bool = False
     sand: bool = False
-    minerium: Minerium = None
+    minerium: Minerium | None = None
     bonus: str | Category | Weapon | None = None
-    owned: bool = False
+    owned: bool | None = False
 
     buildings: list[Building] = field(default_factory=list) # buildings constructed
     units: list[Unit] = field(default_factory=list)         # units trainable with buildings constructed

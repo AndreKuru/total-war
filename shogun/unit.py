@@ -17,6 +17,7 @@ class Weapon(Enum):
     FIREARM = 4
     SWORD_AND_NINJA_STARS = 5
     JAVELIN_SWORD_AND_SHIELD = 6
+    CROSSBOW = 7
 
 @dataclass
 class Unit:
@@ -27,7 +28,7 @@ class Unit:
     weapon: Weapon
     soldiers: int
     cost: int
-    seasons_to_train: int
+    seasons_to_train: int = 1
     morale_boost: int = 0
 
 @dataclass
@@ -38,8 +39,8 @@ class Agent:
     seasons_to_train: int
     morale_boost: int | None = 0
 
-def list_units(units: list[Unit]):
-    for unit in units:
+def list_units(units: dict[Unit]):
+    for unit in units.values():
         spaces = ""
         for _ in range(4 - len(unit.id)):
             spaces += " "
